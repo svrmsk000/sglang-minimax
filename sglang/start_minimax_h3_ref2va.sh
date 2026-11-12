@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SGLANG_BIN="${SGLANG_BIN:-$(cat /etc/sglang-bin 2>/dev/null || command -v sglang 2>/dev/null || true)}"
+if [ -z "${SGLANG_BIN:-}" ] || [ ! -x "${SGLANG_BIN:-/nonexistent}" ]; then
+  SGLANG_BIN="$(cat /etc/sglang-bin 2>/dev/null || true)"
+fi
+if [ -z "${SGLANG_BIN:-}" ] || [ ! -x "$SGLANG_BIN" ]; then
+  if [ -x /opt/sglang/bin/sglang ]; then
+    SGLANG_BIN="/opt/sglang/bin/sglang"
+  else
+    SGLANG_BIN="$(command -v sglang 2>/dev/null || true)"
+  fi
+fi
 MODEL_DIR="${MINIMAX_H3_SGLANG_MODEL_ID:-MiniMaxAI/MiniMax-H3}"
 GPU_COUNT="${1:-1}"
 
