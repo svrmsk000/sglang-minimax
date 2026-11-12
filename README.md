@@ -11,7 +11,7 @@ Pinned components:
 - ComfyUI directory: `/opt/ComfyUI`
 - ComfyUI Python environment: `/opt/comfyui-venv`
 
-The image does not bake model weights.
+The image does not bake model weights. It includes the MiniMax H3 Prompt Writer and H3 Video Upsampler custom nodes, plus CUDA-enabled `llama-cpp-python`.
 
 ## Build
 
@@ -31,23 +31,20 @@ docker run -d --name sglang-minimax --gpus all --ipc=host --shm-size 32g \
 
 The example volume keeps downloaded Hugging Face files outside the container. Change the host path as needed.
 
-## Start ComfyUI
+## ComfyUI service
 
-Run inside the container:
+Run inside the container as root: `service comfyui start`, `service comfyui status`, `service comfyui stop`, or `service comfyui restart`.
+
+ComfyUI does not start automatically. Logs: `/tmp/comfyui.log`; PID file: `/run/comfyui.pid`. The launcher discovers NVIDIA Python-package library directories dynamically and prepends them to `LD_LIBRARY_PATH`.
+
+## Optional model downloads
+
+Run manually inside the container; these scripts only download weights:
 
 ```bash
-/opt/comfyui-tools/start_comfyui.sh
+/opt/comfyui-tools/download_h3_writer_models.sh
+/opt/comfyui-tools/comfy-h3-video-upscaler-install.sh
 ```
-
-This runs the requested command with the isolated venv activated in the process environment:
-
-```bash
-cd /opt/ComfyUI
-export PATH="/opt/comfyui-venv/bin:$PATH"
-nohup python3 main.py --listen 0.0.0.0 --port 8188 --enable-cors-header --preview-method none --high-ram --enable-manager > /tmp/comfyui.log 2>&1 &
-```
-
-Open port `8188`. Logs: `/tmp/comfyui.log`. The launcher writes its PID to `/run/comfyui.pid`.
 
 Useful checks:
 

@@ -4,6 +4,8 @@ ARG COMFYUI_REF=v0.42.1
 ARG COMFYUI_COMMIT=63be2f9b82ad0dac88a7ceaa28a9cf3154125a18
 ARG COMFYUI_MANAGER_REF=4.2.2
 ARG COMFYUI_MANAGER_COMMIT=bd4ede2237c97b3a71569a0301a0be9db226c7e9
+ARG H3_WRITER_COMMIT=47514b86c573167f5d0cae2b9d5184c009e332e1
+ARG H3_UPSAMPLER_COMMIT=4776bd757a38a047645bf534cf838f2ad526b283
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -68,10 +70,23 @@ RUN set -eux; \
     /opt/comfyui-venv/bin/python -m pip install --no-cache-dir -r /tmp/comfyui-requirements.txt; \
     /opt/comfyui-venv/bin/python -m pip install --no-cache-dir -r /opt/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt; \
     /opt/comfyui-venv/bin/python -m pip install --no-cache-dir --no-deps --editable /opt/ComfyUI/custom_nodes/ComfyUI-Manager; \
+    git init /opt/ComfyUI/custom_nodes/ComfyUI-MiniMaxH3-Prompt-Writer; \
+    git -C /opt/ComfyUI/custom_nodes/ComfyUI-MiniMaxH3-Prompt-Writer remote add origin https://github.com/duckyshell/ComfyUI-MiniMaxH3-Prompt-Writer.git; \
+    git -C /opt/ComfyUI/custom_nodes/ComfyUI-MiniMaxH3-Prompt-Writer fetch --depth 1 origin "$H3_WRITER_COMMIT"; \
+    git -C /opt/ComfyUI/custom_nodes/ComfyUI-MiniMaxH3-Prompt-Writer checkout --detach FETCH_HEAD; \
+    /opt/comfyui-venv/bin/python -m pip install --no-cache-dir --only-binary=:all: --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu130 "llama-cpp-python>=0.3.34,<0.4"; \
+    git init /opt/ComfyUI/custom_nodes/ComfyUI-H3-Video-Upsampler; \
+    git -C /opt/ComfyUI/custom_nodes/ComfyUI-H3-Video-Upsampler remote add origin https://github.com/sandpies/ComfyUI-H3-Video-Upsampler.git; \
+    git -C /opt/ComfyUI/custom_nodes/ComfyUI-H3-Video-Upsampler fetch --depth 1 origin "$H3_UPSAMPLER_COMMIT"; \
+    git -C /opt/ComfyUI/custom_nodes/ComfyUI-H3-Video-Upsampler checkout --detach FETCH_HEAD; \
     /opt/comfyui-venv/bin/python -c 'import importlib.metadata as m, pathlib, torch, torchvision; assert m.version("comfyui-manager") == "4.2.2", m.version("comfyui-manager"); assert torch.version.cuda, "CUDA-enabled PyTorch missing in ComfyUI venv"; print("ComfyUI Manager:", m.version("comfyui-manager")); print("ComfyUI venv PyTorch:", torch.__version__, "CUDA:", torch.version.cuda, "torch:", torch.__file__)'; \
     VENV_TORCH_SITE="$("/opt/comfyui-venv/bin/python" -c 'import pathlib, torch; print(pathlib.Path(torch.__file__).resolve().parent.parent)')"; \
     test "$VENV_TORCH_SITE" = "$BASE_TORCH_SITE"; \
-    chmod 0755 /opt/comfyui-tools/start_comfyui.sh
+    chmod 0755 /opt/comfyui-tools/start_comfyui.sh /opt/comfyui-tools/comfyui-service /opt/comfyui-tools/download_h3_writer_models.sh /opt/comfyui-tools/comfy-h3-video-upscaler-install.sh; \
+    ln -sfn /opt/comfyui-tools/comfyui-service /etc/init.d/comfyui; \
+    bash -n /opt/comfyui-tools/comfyui-service; \
+    bash -n /opt/comfyui-tools/download_h3_writer_models.sh; \
+    bash -n /opt/comfyui-tools/comfy-h3-video-upscaler-install.sh
 
 EXPOSE 22 30010 8188
 
