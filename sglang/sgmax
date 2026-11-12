@@ -11,7 +11,7 @@
 set -u
 
 NAME="sgmax"
-SGLANG_BIN="${SGLANG_BIN:-$(command -v sglang 2>/dev/null || true)}"
+SGLANG_BIN="${SGLANG_BIN:-$(cat /etc/sglang-bin 2>/dev/null || command -v sglang 2>/dev/null || true)}"
 LAUNCHER="/opt/sglang-minimax/start_minimax_h3_ref2va.sh"
 PIDFILE="${SGLANG_PIDFILE:-/run/sgmax.pid}"
 MODEFILE="${SGLANG_MODEFILE:-/run/sgmax.gpus}"
@@ -38,7 +38,8 @@ do_start() {
   rm -f "$PIDFILE" "$MODEFILE"
 
   if [ -z "$SGLANG_BIN" ] || [ ! -x "$SGLANG_BIN" ]; then
-    echo "ERROR: SGLang executable was not found. Set SGLANG_BIN or ensure sglang is on PATH." >&2
+    echo "ERROR: SGLang executable is missing or not executable: ${SGLANG_BIN:-<empty>}" >&2
+    echo "Checked /etc/sglang-bin and PATH." >&2
     return 1
   fi
   if [ ! -x "$LAUNCHER" ]; then
