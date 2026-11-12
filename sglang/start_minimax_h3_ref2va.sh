@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SGLANG_BIN="${SGLANG_BIN:-$(command -v sglang 2>/dev/null || true)}"
+SGLANG_BIN="${SGLANG_BIN:-$(cat /etc/sglang-bin 2>/dev/null || command -v sglang 2>/dev/null || true)}"
 MODEL_DIR="${MINIMAX_H3_SGLANG_MODEL_ID:-MiniMaxAI/MiniMax-H3}"
 GPU_COUNT="${1:-1}"
 
 if [ -z "$SGLANG_BIN" ] || [ ! -x "$SGLANG_BIN" ]; then
-  echo "FATAL: SGLang executable was not found. Set SGLANG_BIN or ensure sglang is on PATH." >&2
+  echo "FATAL: SGLang executable is missing or not executable: ${SGLANG_BIN:-<empty>}" >&2
+  echo "Checked /etc/sglang-bin and PATH." >&2
   exit 1
 fi
 
@@ -38,7 +39,6 @@ esac
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
 export HF_HOME="${HF_HOME:-/workspace/runpod-slim/huggingface}"
-# huggingface_hub reads HF_TOKEN from the environment; SGLang has no token CLI flag.
 if [ -n "${HF_TOKEN:-}" ]; then
   export HF_TOKEN
   echo "Hugging Face authentication: HF_TOKEN is configured."
