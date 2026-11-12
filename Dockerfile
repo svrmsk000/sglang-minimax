@@ -27,7 +27,10 @@ RUN chmod 0755 /usr/local/bin/docker-entrypoint.sh
 COPY sglang/ /opt/sglang-minimax/
 
 RUN set -eux; \
-    command -v sglang; \
+    SGLANG_PATH="$(command -v sglang)"; \
+    test -x "$SGLANG_PATH"; \
+    printf '%s\n' "$SGLANG_PATH" > /etc/sglang-bin; \
+    chmod 0644 /etc/sglang-bin; \
     command -v service; \
     command -v sshd; \
     command -v rsync; \
