@@ -13,6 +13,10 @@ on:
       - .github/workflows/docker-build.yml
   workflow_dispatch:
 
+concurrency:
+  group: docker-build-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   packages: write
