@@ -36,6 +36,9 @@ RUN chmod 0755 /usr/local/bin/docker-entrypoint.sh
 
 COPY sglang/ /opt/sglang-minimax/
 COPY comfyui/ /opt/comfyui-tools/
+COPY comfyui/download_h3_writer_models.sh /opt/download_h3_writer_models.sh
+COPY comfyui/comfy-h3-video-upscaler-install.sh /opt/comfy-h3-video-upscaler-install.sh
+COPY opt/download_minimax_h3_models.sh /opt/download_minimax_h3_models.sh
 
 RUN set -eux; \
     SGLANG_PATH="$(command -v sglang)"; \
@@ -82,11 +85,12 @@ RUN set -eux; \
     /opt/comfyui-venv/bin/python -c 'import importlib.metadata as m, pathlib, torch, torchvision; assert m.version("comfyui-manager") == "4.2.2", m.version("comfyui-manager"); assert torch.version.cuda, "CUDA-enabled PyTorch missing in ComfyUI venv"; print("ComfyUI Manager:", m.version("comfyui-manager")); print("ComfyUI venv PyTorch:", torch.__version__, "CUDA:", torch.version.cuda, "torch:", torch.__file__)'; \
     VENV_TORCH_SITE="$("/opt/comfyui-venv/bin/python" -c 'import pathlib, torch; print(pathlib.Path(torch.__file__).resolve().parent.parent)')"; \
     test "$VENV_TORCH_SITE" = "$BASE_TORCH_SITE"; \
-    chmod 0755 /opt/comfyui-tools/start_comfyui.sh /opt/comfyui-tools/comfyui-service /opt/comfyui-tools/download_h3_writer_models.sh /opt/comfyui-tools/comfy-h3-video-upscaler-install.sh; \
+    chmod 0755 /opt/comfyui-tools/start_comfyui.sh /opt/comfyui-tools/comfyui-service /opt/download_h3_writer_models.sh /opt/comfy-h3-video-upscaler-install.sh /opt/download_minimax_h3_models.sh; \
     ln -sfn /opt/comfyui-tools/comfyui-service /etc/init.d/comfyui; \
     bash -n /opt/comfyui-tools/comfyui-service; \
-    bash -n /opt/comfyui-tools/download_h3_writer_models.sh; \
-    bash -n /opt/comfyui-tools/comfy-h3-video-upscaler-install.sh
+    bash -n /opt/download_h3_writer_models.sh; \
+    bash -n /opt/comfy-h3-video-upscaler-install.sh; \
+    bash -n /opt/download_minimax_h3_models.sh
 
 EXPOSE 22 30010 8188
 
