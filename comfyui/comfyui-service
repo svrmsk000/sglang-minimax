@@ -7,51 +7,35 @@
 # Default-Stop:
 # Short-Description: ComfyUI service
 ### END INIT INFO
-
 set -euo pipefail
 DAEMON=/opt/comfyui-tools/start_comfyui.sh
 PIDFILE=/run/comfyui.pid
 LOGFILE=/tmp/comfyui.log
-
 start_service() {
   if start-stop-daemon --status --pidfile "$PIDFILE" >/dev/null 2>&1; then
-    echo "ComfyUI is already running (PID $(cat "$PIDFILE"))."
-    return 0
+    echo "ComfyUI is already running (PID $(cat "$PIDFILE"))."; return 0
   fi
   rm -f "$PIDFILE"
-  start-stop-daemon --start --background --make-pidfile \
-    --pidfile "$PIDFILE" --startas "$DAEMON" \
-    --chdir /opt/ComfyUI --output "$LOGFILE"
+  start-stop-daemon --start --background --make-pidfile --pidfile "$PIDFILE" --startas "$DAEMON" --chdir /opt/ComfyUI --output "$LOGFILE"
   sleep 1
   if start-stop-daemon --status --pidfile "$PIDFILE" >/dev/null 2>&1; then
     echo "ComfyUI started (PID $(cat "$PIDFILE")); log: $LOGFILE"
   else
-    echo "ComfyUI failed to start; inspect $LOGFILE." >&2
-    rm -f "$PIDFILE"
-    return 1
+    echo "ComfyUI failed to start; inspect $LOGFILE." >&2; rm -f "$PIDFILE"; return 1
   fi
 }
-
 stop_service() {
   if ! start-stop-daemon --status --pidfile "$PIDFILE" >/dev/null 2>&1; then
-    echo "ComfyUI is not running."
-    rm -f "$PIDFILE"
-    return 0
+    echo "ComfyUI is not running."; rm -f "$PIDFILE"; return 0
   fi
   start-stop-daemon --stop --retry=TERM/30/KILL/5 --pidfile "$PIDFILE"
-  rm -f "$PIDFILE"
-  echo "ComfyUI stopped."
+  rm -f "$PIDFILE"; echo "ComfyUI stopped."
 }
-
 status_service() {
   if start-stop-daemon --status --pidfile "$PIDFILE" >/dev/null 2>&1; then
     echo "ComfyUI is running (PID $(cat "$PIDFILE"))."
-  else
-    echo "ComfyUI is not running."
-    return 3
-  fi
+  else echo "ComfyUI is not running."; return 3; fi
 }
-
 case "${1:-}" in
   start) start_service ;;
   stop) stop_service ;;
