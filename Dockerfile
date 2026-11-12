@@ -69,6 +69,8 @@ RUN set -eux; \
     git clone --depth 1 --branch "$COMFYUI_REF" https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI; \
     test "$(git -C /opt/ComfyUI rev-parse HEAD)" = "$COMFYUI_COMMIT"; \
     git clone --depth 1 --branch "$COMFYUI_MANAGER_REF" https://github.com/Comfy-Org/ComfyUI-Manager.git /opt/ComfyUI/custom_nodes/ComfyUI-Manager; \
+    git clone --depth 1 https://gitlab.com/pixaroma/comfyui-pixaroma.git /opt/ComfyUI/custom_nodes/ComfyUI-Pixaroma; \
+    /opt/comfyui-venv/bin/python -m pip install --no-cache-dir -r /opt/ComfyUI/custom_nodes/ComfyUI-Pixaroma/requirements.txt; \
     test "$(git -C /opt/ComfyUI/custom_nodes/ComfyUI-Manager rev-parse HEAD)" = "$COMFYUI_MANAGER_COMMIT"; \
     grep -Ev '^[[:space:]]*(torch|torchvision)([[:space:]<=>!~;#]|$)' /opt/ComfyUI/requirements.txt > /tmp/comfyui-requirements.txt; \
     /opt/comfyui-venv/bin/python -m pip install --no-cache-dir -r /tmp/comfyui-requirements.txt; \
