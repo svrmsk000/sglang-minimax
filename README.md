@@ -2,7 +2,7 @@
 
 A small extension of `lmsysorg/sglang:latest` that adds the MiniMax H3 Ref2VA SGLang launcher, SSH access, and an isolated ComfyUI 0.42 environment.
 
-SGLang continues to use the Python environment supplied by the base image. ComfyUI is installed separately in `/opt/comfyui-venv`; its packages are installed into that venv only. The ComfyUI venv reuses the base image's CUDA-enabled PyTorch and torchvision through a read-only site-packages path, so the Docker build does not install or replace a second PyTorch/CUDA stack in the SGLang environment.
+SGLang continues to use the Python environment supplied by the base image. ComfyUI is installed separately in `/opt/comfyui-venv`; its packages are installed into that venv only. The ComfyUI venv reuses the base image's CUDA-enabled PyTorch and torchvision by adding the base environment's site-packages path to the ComfyUI venv, so the Docker build does not install or replace a second PyTorch/CUDA stack in the SGLang environment.
 
 Pinned components:
 
