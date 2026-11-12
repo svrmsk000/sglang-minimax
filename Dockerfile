@@ -6,6 +6,7 @@ RUN apt-get update \
         openssh-server \
         rsync \
         jq \
+        nano \
     && mkdir -p /root/.ssh /run/sshd /etc/ssh/sshd_config.d \
     && chmod 700 /root/.ssh \
     && printf '%s\n' \
@@ -35,6 +36,7 @@ RUN set -eux; \
     command -v sshd; \
     command -v rsync; \
     command -v jq; \
+    command -v nano; \
     mkdir -p /etc/init.d; \
     chmod 0755 /opt/sglang-minimax/sgmax /opt/sglang-minimax/start_minimax_h3_ref2va.sh; \
     ln -sfn /opt/sglang-minimax/sgmax /etc/init.d/sgmax; \
