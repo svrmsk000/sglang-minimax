@@ -8,11 +8,11 @@ RUN apt-get update \
         jq \
     && mkdir -p /root/.ssh /run/sshd /etc/ssh/sshd_config.d \
     && chmod 700 /root/.ssh \
-    && printf '%s\\n' \
+    && printf '%s\n' \
         'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSG3vISjWzjlxZDV8w1FbNDa2aEty4hx0b+wq42Viu7 root@DESKTOP-6S75UR7' \
         > /root/.ssh/authorized_keys \
     && chmod 600 /root/.ssh/authorized_keys \
-    && printf '%s\\n' \
+    && printf '%s\n' \
         'Port 22' \
         'PermitRootLogin prohibit-password' \
         'PubkeyAuthentication yes' \
