@@ -7,7 +7,7 @@ download() {
   local url="$1"
   local destination="$2"
   local checksum="$3"
-  local partial="\${destination}.part"
+  local partial="${destination}.part"
   local directory
   directory="$(dirname "$destination")"
   mkdir -p "$directory"
@@ -23,14 +23,14 @@ download() {
 
   echo "Downloading: $(basename "$destination")"
   local -a auth=()
-  if [[ -n "\${HF_TOKEN:-}" ]]; then
+  if [[ -n "${HF_TOKEN:-}" ]]; then
     auth=(-H "Authorization: Bearer $HF_TOKEN")
   fi
 
   curl --fail --location --show-error \
     --retry 5 --retry-all-errors --retry-delay 5 \
     --connect-timeout 30 --continue-at - \
-    "\${auth[@]}" "$url" --output "$partial"
+    "${auth[@]}" "$url" --output "$partial"
 
   echo "$checksum  $partial" | sha256sum --check --status || {
     echo "ERROR: SHA256 verification failed: $destination" >&2

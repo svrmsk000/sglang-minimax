@@ -35,8 +35,7 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod 0755 /usr/local/bin/docker-entrypoint.sh
 
 COPY sglang/ /opt/sglang-minimax/
-COPY comfyui/comfyui-service /opt/comfyui-tools/comfyui-service
-COPY comfyui/start_comfyui.sh /opt/comfyui-tools/start_comfyui.sh
+COPY comfyui/ /opt/comfyui-tools/
 COPY comfyui/download_h3_writer_models.sh /opt/download_h3_writer_models.sh
 COPY comfyui/comfy-h3-video-upscaler-install.sh /opt/comfy-h3-video-upscaler-install.sh
 COPY opt/download_minimax_h3_models.sh /opt/download_minimax_h3_models.sh
