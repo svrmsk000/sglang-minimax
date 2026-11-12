@@ -16,11 +16,11 @@ RUN apt-get update \
         python3-venv \
     && mkdir -p /root/.ssh /run/sshd /etc/ssh/sshd_config.d \
     && chmod 700 /root/.ssh \
-    && printf '%s\\n' \
+    && printf '%s\n' \
         'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFSG3vISjWzjlxZDV8w1FbNDa2aEty4hx0b+wq42Viu7 root@DESKTOP-6S75UR7' \
         > /root/.ssh/authorized_keys \
     && chmod 600 /root/.ssh/authorized_keys \
-    && printf '%s\\n' \
+    && printf '%s\n' \
         'Port 22' \
         'PermitRootLogin prohibit-password' \
         'PubkeyAuthentication yes' \
@@ -38,7 +38,7 @@ COPY comfyui/ /opt/comfyui-tools/
 RUN set -eux; \
     SGLANG_PATH="$(command -v sglang)"; \
     test -x "$SGLANG_PATH"; \
-    printf '%s\\n' "$SGLANG_PATH" > /etc/sglang-bin; \
+    printf '%s\n' "$SGLANG_PATH" > /etc/sglang-bin; \
     chmod 0644 /etc/sglang-bin; \
     command -v service; \
     command -v sshd; \
@@ -58,7 +58,7 @@ RUN set -eux; \
     BASE_TORCH_SITE="$("$SGLANG_PYTHON" -c 'import pathlib, torch; print(pathlib.Path(torch.__file__).resolve().parent.parent)')"; \
     "$SGLANG_PYTHON" -m venv --system-site-packages /opt/comfyui-venv; \
     COMFY_SITE="$("/opt/comfyui-venv/bin/python" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"; \
-    printf '%s\\n' "$BASE_TORCH_SITE" > "$COMFY_SITE/sglang-base-site-packages.pth"; \
+    printf '%s\n' "$BASE_TORCH_SITE" > "$COMFY_SITE/sglang-base-site-packages.pth"; \
     /opt/comfyui-venv/bin/python -m pip install --no-cache-dir --upgrade pip; \
     git clone --depth 1 --branch "$COMFYUI_REF" https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI; \
     test "$(git -C /opt/ComfyUI rev-parse HEAD)" = "$COMFYUI_COMMIT"; \
